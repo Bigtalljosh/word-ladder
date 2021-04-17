@@ -13,7 +13,9 @@ namespace Wordladder
 
             if (parsedResults.HasErrors is false)
             {
-                var wordLadder = new WordLadderSolver(parser.Object);
+                var wordLadder = new WordLadderSolver();
+                wordLadder.TryLoadDictionaryFile(parser.Object.DictionaryFileName);
+                wordLadder.TestListLoaded();
             }
             else
             {
