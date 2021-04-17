@@ -1,5 +1,6 @@
 ﻿using Fclp;
 using System;
+using System.Collections.Generic;
 using WordLadder;
 
 namespace Wordladder
@@ -13,9 +14,18 @@ namespace Wordladder
 
             if (parsedResults.HasErrors is false)
             {
-                var wordLadder = new WordLadderSolver();
-                wordLadder.TryLoadDictionaryFile(parser.Object.DictionaryFileName);
-                wordLadder.TestListLoaded();
+                List<string> wordList = new List<string>();
+                FileManager.TryLoadDictionaryFile(parser.Object.DictionaryFileName, ref wordList);
+
+                var wordLadder = new WordLadderSolver(wordList);
+                wordLadder.SanitiseList();
+
+                var ladderResult = wordLadder.CalculateWordLadder(parser.Object.StartWord, parser.Object.EndWord);
+
+                if (ladderResult.Success)
+                {
+                    FileManager.TryWriteResultsFile(parser.Object.ResultsFileName, ladderResult.Result);
+                }
             }
             else
             {

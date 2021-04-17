@@ -1,55 +1,75 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace WordLadder
 {
     public class WordLadderSolver
     {
-        private string[] _wordList;
+        private List<string> _wordList;
 
-        public WordLadderSolver()
+        public WordLadderSolver(List<string> wordList)
         {
-
+            _wordList = wordList;
         }
 
-        public void TestListLoaded()
+        public void SanitiseList()
         {
+            Console.WriteLine($"Word List Length is : {_wordList.Count}");
+            SanitiseWordList();
+            Console.WriteLine($"Word List Length is : {_wordList.Count}");
+        }
+
+        public (bool Success, string Result) CalculateWordLadder(string startWord, string endWord)
+        {
+            var isStartWordValid = IsWordValid(startWord);
+            var isEndWordValid = IsWordValid(endWord);
+            string result = string.Empty;
+
+            if (isStartWordValid && isStartWordValid)
+            {
+                // do things
+                result = "ta da";
+            }
+            else if (!isStartWordValid)
+            {
+                return (false, "Start word is not valid");
+            }
+            else if (!isEndWordValid)
+            {
+                return (false, "End word is not valid");
+            }
+
+            return (true, result);
+        }
+
+        // Probably refactor IO into it's own thing
+        
+
+        private void SanitiseWordList()
+        {
+            var newList = new List<string>();
+
             foreach (var word in _wordList)
-                Console.WriteLine(word);
+            {
+                if (IsWordValid(word))
+                    newList.Add(word);
+            }
+
+            _wordList = newList;
         }
 
-        public (bool Success, string Reason) TryLoadDictionaryFile(string fileName)
+        private static bool IsWordValid(string word)
         {
-            try
-            {
-                var isFileNameValid = ValidateFilename(fileName);
+            Regex rgx = new("^[a-zA-Z]*$");
 
-                if (!isFileNameValid.IsValid)
-                    return (false, isFileNameValid.Reason);
+            if (word.Trim().Length != 4)
+                return false;
 
-                _wordList = File.ReadAllLines(Path.Combine(Directory.GetCurrentDirectory(), fileName));
+            if (!rgx.IsMatch(word))
+                return false;
 
-                return (true, string.Empty);
-            }
-            catch (IOException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return (false, ex.Message);
-            }
-        }
-
-        private static (bool IsValid, string Reason) ValidateFilename(string input)
-        {
-            var invalidChars = Path.GetInvalidFileNameChars();
-
-            if(!Path.GetExtension(input).Equals(".txt")) 
-                return (false, "Filename must end with .txt");
-
-            if (input.Where(x => invalidChars.Contains(x)).ToArray().Length > 0)
-                return (false, "Filename contains illegal characters");
-
-            return (true, string.Empty);
+            return true;
         }
     }
 }
