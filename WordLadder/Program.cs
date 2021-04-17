@@ -1,6 +1,5 @@
 ﻿using Fclp;
 using System;
-using System.Text.Json;
 using WordLadder;
 
 namespace Wordladder
@@ -14,8 +13,7 @@ namespace Wordladder
 
             if (parsedResults.HasErrors is false)
             {
-                // Run the app
-                Console.WriteLine(JsonSerializer.Serialize(parser.Object));
+                var wordLadder = new WordLadderSolver(parser.Object);
             }
             else
             {
