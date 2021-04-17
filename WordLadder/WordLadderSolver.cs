@@ -11,13 +11,7 @@ namespace WordLadder
         public WordLadderSolver(List<string> wordList)
         {
             _wordList = wordList;
-        }
-
-        public void SanitiseList()
-        {
-            Console.WriteLine($"Word List Length is : {_wordList.Count}");
-            SanitiseWordList();
-            Console.WriteLine($"Word List Length is : {_wordList.Count}");
+            SanitiseList();
         }
 
         public (bool Success, string Result) CalculateWordLadder(string startWord, string endWord)
@@ -43,8 +37,12 @@ namespace WordLadder
             return (true, result);
         }
 
-        // Probably refactor IO into it's own thing
-        
+        private void SanitiseList()
+        {
+            Console.WriteLine($"Sanitising Word List Current Length is: {_wordList.Count}");
+            SanitiseWordList();
+            Console.WriteLine($"Sanitised Word List Length is now: {_wordList.Count}");
+        }
 
         private void SanitiseWordList()
         {

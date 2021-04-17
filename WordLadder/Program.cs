@@ -14,17 +14,26 @@ namespace Wordladder
 
             if (parsedResults.HasErrors is false)
             {
-                List<string> wordList = new List<string>();
-                FileManager.TryLoadDictionaryFile(parser.Object.DictionaryFileName, ref wordList);
+                List<string> wordList = new();
+                var fileLoadResult = FileManager.TryLoadDictionaryFile(parser.Object.DictionaryFileName, ref wordList);
+                if (!fileLoadResult.Success)
+                {
+                    Console.WriteLine($"Unable to load Dictionary File: {fileLoadResult.Reason}");
+                }
 
                 var wordLadder = new WordLadderSolver(wordList);
-                wordLadder.SanitiseList();
-
                 var ladderResult = wordLadder.CalculateWordLadder(parser.Object.StartWord, parser.Object.EndWord);
 
-                if (ladderResult.Success)
+                if (!ladderResult.Success)
                 {
-                    FileManager.TryWriteResultsFile(parser.Object.ResultsFileName, ladderResult.Result);
+                    Console.WriteLine($"Unable to calculate word ladder for startWord: {parser.Object.StartWord} and endWord: {parser.Object.EndWord}.\r\nReason: {ladderResult.Result} ");
+                }
+
+                var resultsFileWriteResult = FileManager.TryWriteResultsFile(parser.Object.ResultsFileName, ladderResult.Result);
+
+                if (!resultsFileWriteResult.Success)
+                {
+                    Console.WriteLine($"Unable to write results file, Reason: {resultsFileWriteResult.Reason} ");
                 }
             }
             else
