@@ -20,10 +20,10 @@ namespace WordLadder
             var isEndWordValid = IsWordValid(endWord);
             string result = string.Empty;
 
-            if (isStartWordValid && isStartWordValid)
+            if (isStartWordValid && isEndWordValid)
             {
                 // do things
-                result = "ta da";
+                result = "ta da two";
             }
             else if (!isStartWordValid)
             {

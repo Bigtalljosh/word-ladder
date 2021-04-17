@@ -1,15 +1,20 @@
-﻿using Xunit;
+﻿using System.Collections.Generic;
+using Xunit;
 
-namespace WordLadder.UnitTests.WordLadderSolver
+namespace WordLadder.UnitTests
 {
     public class CalculateWordLadder
     {
-
         [Theory]
-        [InlineData("", "")]
+        [InlineData("Spin", "Span")]
+        [InlineData("Spin", "Spot")]
         public void ShouldReturnTrueAndWordLadder_WhenAbleToCalculateWordLadder(string startWord, string endWord)
         {
+            List<string> wordList = new() { "Spin", "Spit", "Spat", "Spot", "Span" };
+            var wordLadder = new WordLadderSolver(wordList);
 
+            var ladderResult = wordLadder.CalculateWordLadder(startWord, endWord);
+            Assert.True(ladderResult.Success);
         }
 
         [Theory]
@@ -22,7 +27,23 @@ namespace WordLadder.UnitTests.WordLadderSolver
         [InlineData("AAAA", "BBB1")]
         public void ShouldReturnFalseAndReason_WhenStartOrEndWordsAreInvalid(string startWord, string endWord)
         {
+            List<string> wordList = new() { "Spin", "Spit", "Spat", "Spot", "Span" };
+            var wordLadder = new WordLadderSolver(wordList);
 
+            var ladderResult = wordLadder.CalculateWordLadder(startWord, endWord);
+            Assert.False(ladderResult.Success);
+        }
+
+        [Theory]
+        [InlineData("Spin", "Cave")]
+        [InlineData("Ball", "Dogs")]
+        public void ShouldReturnFalseAndReason_WhenLadderCannotBeCreated(string startWord, string endWord)
+        {
+            List<string> wordList = new() { "Spin", "Spit", "Spat", "Spot", "Span" };
+            var wordLadder = new WordLadderSolver(wordList);
+
+            var ladderResult = wordLadder.CalculateWordLadder(startWord, endWord);
+            Assert.False(ladderResult.Success);
         }
     }
 }

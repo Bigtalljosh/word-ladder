@@ -38,11 +38,6 @@ namespace WordLadder
             var fullPath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
             var wordList = wordLadder.Split(' ');
 
-            if (!File.Exists(fullPath))
-            {
-                File.Create(fullPath);
-            }
-
             File.WriteAllLines(fullPath, wordList, Encoding.UTF8);
             return (true, string.Empty);
         }
