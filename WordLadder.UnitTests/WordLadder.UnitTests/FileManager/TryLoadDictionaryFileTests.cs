@@ -18,6 +18,7 @@ namespace WordLadder.UnitTests
         [Theory]
         [InlineData("test")]
         [InlineData("test.png")]
+        [InlineData("test/.txt")]
         [InlineData("test?.txt")]
         public void ShouldReturnFalseAndReason_WhenFileIsNotValid(string fileName)
         {
