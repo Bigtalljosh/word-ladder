@@ -1,8 +1,9 @@
-﻿using Xunit;
+﻿using WordLadder.IO;
+using Xunit;
 
 namespace WordLadder.UnitTests
 {
-    public class TryWriteResultsFile
+    public class TryWriteResultsFileTests
     {
         private readonly string _testFileName = "results.txt";
         private readonly string _resultsWordLadder = "This Is A Test String";
@@ -10,7 +11,8 @@ namespace WordLadder.UnitTests
         [Fact]
         public void ShouldReturnTrue_WhenFileWritesSuccessfully()
         {
-            var result = FileManager.TryWriteResultsFile(_testFileName, _resultsWordLadder);
+            var fileManager = new FileManager();
+            var result = fileManager.TryWriteResultsFile(_testFileName, _resultsWordLadder);
             Assert.True(result.Success);
         }
 
@@ -20,7 +22,8 @@ namespace WordLadder.UnitTests
         [InlineData("results?.txt")]
         public void ShouldReturnFalseAndReason_WhenFileContainsInvalidCharacters(string fileName)
         {
-            var result = FileManager.TryWriteResultsFile(fileName, _resultsWordLadder);
+            var fileManager = new FileManager();
+            var result = fileManager.TryWriteResultsFile(fileName, _resultsWordLadder);
             Assert.False(result.Success);
         }
     }

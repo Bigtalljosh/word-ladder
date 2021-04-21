@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using WordLadder.IO;
+using WordLadder.Solvers;
 
 namespace WordLadder
 {
@@ -9,12 +12,15 @@ namespace WordLadder
         private const int _maxWordLength = 4;
         private List<string> _wordList;
         private readonly IWordLadderSolver _wordLadderSolver;
+        private readonly IFileManager _fileManager;
 
-        public WordLadderApp(List<string> wordList)
+        public WordLadderApp(IFileManager fileManager, IWordLadderSolver solver, IOptions<ApplicationArguments> options)
         {
-            _wordList = wordList;
+            _wordList = new();
+            _fileManager = fileManager;
+            _wordLadderSolver = solver;
+            _fileManager.TryLoadDictionaryFile(options.Value.DictionaryFileName, ref _wordList);
             SanitiseWordList();
-            _wordLadderSolver = new WordLadderSolver();
         }
 
         public (bool Success, string Result) CalculateWordLadder(string startWord, string endWord)

@@ -4,11 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace WordLadder
+namespace WordLadder.IO
 {
-    public static class FileManager
+    public class FileManager : IFileManager
     {
-        public static (bool Success, string Reason) TryLoadDictionaryFile(string fileName, ref List<string> wordList)
+        public FileManager()
+        {
+
+        }
+
+        public (bool Success, string Reason) TryLoadDictionaryFile(string fileName, ref List<string> wordList)
         {
             try
             {
@@ -28,7 +33,7 @@ namespace WordLadder
             }
         }
 
-        public static (bool Success, string Reason) TryWriteResultsFile(string fileName, string wordLadder)
+        public (bool Success, string Reason) TryWriteResultsFile(string fileName, string wordLadder)
         {
             var isFileNameValid = ValidateFilename(fileName);
 
@@ -42,7 +47,7 @@ namespace WordLadder
             return (true, string.Empty);
         }
 
-        private static (bool IsValid, string Reason) ValidateFilename(string input)
+        private (bool IsValid, string Reason) ValidateFilename(string input)
         {
             var invalidChars = Path.GetInvalidFileNameChars();
 
