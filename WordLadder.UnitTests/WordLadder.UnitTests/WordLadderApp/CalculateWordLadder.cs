@@ -11,7 +11,7 @@ namespace WordLadder.UnitTests
         public void ShouldReturnTrueAndWordLadder_WhenAbleToCalculateWordLadder(string startWord, string endWord)
         {
             List<string> wordList = new() { "Spin", "Spit", "Spat", "Spot", "Span" };
-            var wordLadder = new WordLadderSolver(wordList);
+            var wordLadder = new WordLadderApp(wordList);
 
             var ladderResult = wordLadder.CalculateWordLadder(startWord, endWord);
             Assert.True(ladderResult.Success);
@@ -28,7 +28,7 @@ namespace WordLadder.UnitTests
         public void ShouldReturnFalseAndReason_WhenStartOrEndWordsAreInvalid(string startWord, string endWord)
         {
             List<string> wordList = new() { "Spin", "Spit", "Spat", "Spot", "Span" };
-            var wordLadder = new WordLadderSolver(wordList);
+            var wordLadder = new WordLadderApp(wordList);
 
             var ladderResult = wordLadder.CalculateWordLadder(startWord, endWord);
             Assert.False(ladderResult.Success);
@@ -40,7 +40,7 @@ namespace WordLadder.UnitTests
         public void ShouldReturnFalseAndReason_WhenLadderCannotBeCreated(string startWord, string endWord)
         {
             List<string> wordList = new() { "Spin", "Spit", "Spat", "Spot", "Span" };
-            var wordLadder = new WordLadderSolver(wordList);
+            var wordLadder = new WordLadderApp(wordList);
 
             var ladderResult = wordLadder.CalculateWordLadder(startWord, endWord);
             Assert.False(ladderResult.Success);

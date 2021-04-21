@@ -1,73 +1,132 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Text;
 
 namespace WordLadder
 {
-    public class WordLadderSolver
+    public static class WordLadderSolver
     {
-        private List<string> _wordList;
+        private const char _wildcardCharacter = '*';
 
-        public WordLadderSolver(List<string> wordList)
+        /* This is our graph of words
+         * The key will be the word itself with the _wildcardCharacter replaced in each position
+         * The Hashset contains the whole words that can be made by replacing the wildcard character */         
+        static Dictionary<string, HashSet<string>> _graph = new();
+
+        // This Dictionary is to store the possible paths
+        static Dictionary<string, List<List<string>>> _paths = new();
+
+        // This is a collection of words we have already visited in the graph 
+        static HashSet<string> _visited = new();
+
+        /// <summary>
+        /// Finds the Shortest possible ladder from the startWord to the endWord in a given wordList.
+        /// </summary>
+        /// <param name="startWord">The word to start the ladder from</param>
+        /// <param name="endWord">The word to end the ladder at</param>
+        /// <param name="wordList">The word list to traverse to produce the ladder</param>
+        /// <returns></returns>
+        public static List<string> FindShortestLadder(string startWord, string endWord, List<string> wordList)
         {
-            _wordList = wordList;
-            SanitiseList();
-        }
+            InitialiseGraph(startWord, wordList);
 
-        public (bool Success, string Result) CalculateWordLadder(string startWord, string endWord)
-        {
-            var isStartWordValid = IsWordValid(startWord);
-            var isEndWordValid = IsWordValid(endWord);
-            string result = string.Empty;
+            Queue<string> queue = new();
+            queue.Enqueue(startWord);
 
-            if (isStartWordValid && isEndWordValid)
+            _paths[startWord] = new() { new() { startWord } };            
+
+            while (queue.Count > 0)
             {
-                // do things
-                result = "ta da two";
-            }
-            else if (!isStartWordValid)
-            {
-                return (false, "Start word is not valid");
-            }
-            else if (!isEndWordValid)
-            {
-                return (false, "End word is not valid");
+                var processingWord = queue.Dequeue();
+
+                if (processingWord.Equals(endWord))
+                {
+                    return _paths[endWord][0];
+                }
+
+                _visited.Add(processingWord);
+
+                // Transform word to intermidiate words and find matches in the mappings we created for each word
+                for (int i = 0; i < processingWord.Length; i++)
+                {
+                    StringBuilder sb = new(processingWord);
+                    sb[i] = _wildcardCharacter;
+                    var transformedWord = sb.ToString();
+
+                    foreach (var word in _graph[transformedWord])
+                    {
+                        if (!_visited.Contains(word))
+                        {
+                            GenerateAdjacentPaths(processingWord, word);
+                            // Place the next word on the queue to repeat the process for the next word in the ladder
+                            queue.Enqueue(word);
+                        }
+                    }
+                }
             }
 
-            return (true, result);
+            return new List<string> { "No Ladder Can Be Found" };
         }
 
-        private void SanitiseList()
+        /// <summary>
+        /// Initialise our graph of words
+        /// </summary>
+        /// <param name="startWord"></param>
+        /// <param name="wordList"></param>
+        private static void InitialiseGraph(string startWord, List<string> wordList)
         {
-            Console.WriteLine($"Sanitising Word List Current Length is: {_wordList.Count}");
-            SanitiseWordList();
-            Console.WriteLine($"Sanitised Word List Length is now: {_wordList.Count}");
+            AddWordMappingToGraph(startWord, _graph);
+
+            foreach (var word in wordList)
+                AddWordMappingToGraph(word, _graph);
         }
 
-        private void SanitiseWordList()
+        /// <summary>
+        /// This method genereates a mapping from each word replacing each character with a wildcard so we can create
+        /// a graph of words that could link from the input word. 
+        /// For example if we take 'Cat' we could have a mapping of: *at, c*t, ca*
+        /// We store all these mappings in a dictionary where the key is the input word
+        /// </summary>
+        /// <param name="word">The input word to map</param>
+        /// <param name="graph">The graph to store the mappings in</param>
+        private static void AddWordMappingToGraph(string word, Dictionary<string, HashSet<string>> graph)
         {
-            var newList = new List<string>();
-
-            foreach (var word in _wordList)
+            for (int i = 0; i < word.Length; i++)
             {
-                if (IsWordValid(word))
-                    newList.Add(word);
+                StringBuilder sb = new(word);
+                sb[i] = _wildcardCharacter;
+
+                if (graph.ContainsKey(sb.ToString()))
+                {
+                    graph[sb.ToString()].Add(word);
+                }
+                else
+                {
+                    HashSet<string> set = new() { word };
+                    graph[sb.ToString()] = set;
+                }
             }
-
-            _wordList = newList;
         }
 
-        private static bool IsWordValid(string word)
+        /// <summary>
+        /// Generates the paths to adjacent words from our processing word to our transformed word
+        /// </summary>
+        /// <param name="processingWord"></param>
+        /// <param name="word"></param>
+        private static void GenerateAdjacentPaths(string processingWord, string word)
         {
-            Regex rgx = new("^[a-zA-Z]*$");
+            foreach (var path in _paths[processingWord])
+            {
+                var newPath = new List<string>(path) { word };
 
-            if (word.Trim().Length != 4)
-                return false;
-
-            if (!rgx.IsMatch(word))
-                return false;
-
-            return true;
-        }
+                if (!_paths.ContainsKey(word))
+                {
+                    _paths[word] = new() { newPath };
+                } // We are only interested in the shortest path
+                else if (_paths[word][0].Count >= newPath.Count)
+                {
+                    _paths[word].Add(newPath);
+                }
+            }
+        }        
     }
 }

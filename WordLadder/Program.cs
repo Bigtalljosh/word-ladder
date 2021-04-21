@@ -9,36 +9,47 @@ namespace Wordladder
     {
         public static void Main(string[] args)
         {
+            Console.Title = "Word Ladder";
+
             var parser = SetupFluentCommandLineParser();
             var parsedResults = parser.Parse(args);
 
             if (parsedResults.HasErrors is false)
             {
                 List<string> wordList = new();
-                var fileLoadResult = FileManager.TryLoadDictionaryFile(parser.Object.DictionaryFileName, ref wordList);
-                if (!fileLoadResult.Success)
+                var fileManagerReadResult = FileManager.TryLoadDictionaryFile(parser.Object.DictionaryFileName, ref wordList);
+
+                if (!fileManagerReadResult.Success)
                 {
-                    Console.WriteLine($"Unable to load Dictionary File: {fileLoadResult.Reason}");
+                    Console.Error.WriteLine($"Unable to load Dictionary File: {fileManagerReadResult.Reason}");
                 }
 
-                var wordLadder = new WordLadderSolver(wordList);
-                var ladderResult = wordLadder.CalculateWordLadder(parser.Object.StartWord, parser.Object.EndWord);
+                var wordLadderSolver = new WordLadderApp(wordList);
+                var wordLadderResult = wordLadderSolver.CalculateWordLadder(parser.Object.StartWord, parser.Object.EndWord);
 
-                if (!ladderResult.Success)
+                if (!wordLadderResult.Success)
                 {
-                    Console.WriteLine($"Unable to calculate word ladder for startWord: {parser.Object.StartWord} and endWord: {parser.Object.EndWord}.\r\nReason: {ladderResult.Result} ");
+                    Console.Error.WriteLine($"Unable to calculate word ladder for startWord: {parser.Object.StartWord} and endWord: {parser.Object.EndWord}.{Environment.NewLine}Reason: {wordLadderResult.Result} ");
                 }
 
-                var resultsFileWriteResult = FileManager.TryWriteResultsFile(parser.Object.ResultsFileName, ladderResult.Result);
-
-                if (!resultsFileWriteResult.Success)
+#if (DEBUG)
+                Console.WriteLine("Result is :");
+                foreach (var word in wordLadderResult.Result.Split(" "))
                 {
-                    Console.WriteLine($"Unable to write results file, Reason: {resultsFileWriteResult.Reason} ");
+                    Console.WriteLine(word);
+                }
+#endif
+
+                var fileManagerWriteResult = FileManager.TryWriteResultsFile(parser.Object.ResultsFileName, wordLadderResult.Result);
+
+                if (!fileManagerWriteResult.Success)
+                {
+                    Console.Error.WriteLine($"Unable to write results file, Reason: {fileManagerWriteResult.Reason} ");
                 }
             }
             else
             {
-                Console.WriteLine(parsedResults.ErrorText);
+                Console.Error.WriteLine(parsedResults.ErrorText);
             }
         }
 
@@ -51,22 +62,26 @@ namespace Wordladder
             parser.Setup(arg => arg.DictionaryFileName)
              .As('d', "dictionary")
              .WithDescription("The filename of the Dictionary File to use. Currently we only support .txt files.")
-             .Required();
+             .SetDefault("words-english.txt")
+             ;//.Required();
 
             parser.Setup(arg => arg.ResultsFileName)
              .As('r', "result")
              .WithDescription("The filename of the results .txt file.")
-             .Required();
+             .SetDefault("resultsfile.txt")
+             ;//.Required();
 
             parser.Setup(arg => arg.StartWord)
              .As('s', "start")
              .WithDescription("The Word to start the word ladder with.")
-             .Required();
+             .SetDefault("spin")
+             ;//.Required();
 
             parser.Setup(arg => arg.EndWord)
              .As('e', "end")
              .WithDescription("The Word to end the word ladder at.")
-             .Required();
+             .SetDefault("spot")
+             ;//.Required();
 
             return parser;
         }
