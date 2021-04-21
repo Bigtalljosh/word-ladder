@@ -47,14 +47,14 @@ namespace WordLadder.IO
             return (true, string.Empty);
         }
 
-        private (bool IsValid, string Reason) ValidateFilename(string input)
+        private static (bool IsValid, string Reason) ValidateFilename(string input)
         {
-            var invalidChars = Path.GetInvalidFileNameChars();
-
             if (!Path.GetExtension(input).Equals(".txt"))
                 return (false, "Filename must end with .txt");
 
-            if (input.Where(x => invalidChars.Contains(x)).ToArray().Length > 0)
+            var strippedExtension = input.Replace(".txt", "");
+            var containsIllegalCharacters = strippedExtension.Any(ch => !char.IsLetterOrDigit(ch));
+            if (containsIllegalCharacters)
                 return (false, "Filename contains illegal characters");
 
             return (true, string.Empty);
