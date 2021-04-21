@@ -3,20 +3,27 @@ using System.Text;
 
 namespace WordLadder
 {
-    public static class WordLadderSolver
+    public class WordLadderSolver : IWordLadderSolver
     {
         private const char _wildcardCharacter = '*';
 
         /* This is our graph of words
          * The key will be the word itself with the _wildcardCharacter replaced in each position
-         * The Hashset contains the whole words that can be made by replacing the wildcard character */         
-        static Dictionary<string, HashSet<string>> _graph = new();
+         * The Hashset contains the whole words that can be made by replacing the wildcard character */
+        private static Dictionary<string, HashSet<string>> _graph;
 
         // This Dictionary is to store the possible paths
-        static Dictionary<string, List<List<string>>> _paths = new();
+        private static Dictionary<string, List<List<string>>> _paths;
 
         // This is a collection of words we have already visited in the graph 
-        static HashSet<string> _visited = new();
+        private static HashSet<string> _visited;
+
+        public WordLadderSolver()
+        {
+            _graph = new();
+            _paths = new();
+            _visited = new();
+        }
 
         /// <summary>
         /// Finds the Shortest possible ladder from the startWord to the endWord in a given wordList.
@@ -25,14 +32,14 @@ namespace WordLadder
         /// <param name="endWord">The word to end the ladder at</param>
         /// <param name="wordList">The word list to traverse to produce the ladder</param>
         /// <returns></returns>
-        public static List<string> FindShortestLadder(string startWord, string endWord, List<string> wordList)
+        public List<string> FindShortestLadder(string startWord, string endWord, List<string> wordList)
         {
             InitialiseGraph(startWord, wordList);
 
             Queue<string> queue = new();
             queue.Enqueue(startWord);
 
-            _paths[startWord] = new() { new() { startWord } };            
+            _paths[startWord] = new() { new() { startWord } };
 
             while (queue.Count > 0)
             {
@@ -72,7 +79,7 @@ namespace WordLadder
         /// </summary>
         /// <param name="startWord"></param>
         /// <param name="wordList"></param>
-        private static void InitialiseGraph(string startWord, List<string> wordList)
+        private void InitialiseGraph(string startWord, List<string> wordList)
         {
             AddWordMappingToGraph(startWord, _graph);
 
@@ -88,7 +95,7 @@ namespace WordLadder
         /// </summary>
         /// <param name="word">The input word to map</param>
         /// <param name="graph">The graph to store the mappings in</param>
-        private static void AddWordMappingToGraph(string word, Dictionary<string, HashSet<string>> graph)
+        private void AddWordMappingToGraph(string word, Dictionary<string, HashSet<string>> graph)
         {
             for (int i = 0; i < word.Length; i++)
             {
@@ -112,7 +119,7 @@ namespace WordLadder
         /// </summary>
         /// <param name="processingWord"></param>
         /// <param name="word"></param>
-        private static void GenerateAdjacentPaths(string processingWord, string word)
+        private void GenerateAdjacentPaths(string processingWord, string word)
         {
             foreach (var path in _paths[processingWord])
             {
@@ -127,6 +134,6 @@ namespace WordLadder
                     _paths[word].Add(newPath);
                 }
             }
-        }        
+        }
     }
 }

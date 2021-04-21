@@ -8,11 +8,13 @@ namespace WordLadder
     {
         private const int _maxWordLength = 4;
         private List<string> _wordList;
+        private readonly IWordLadderSolver _wordLadderSolver;
 
         public WordLadderApp(List<string> wordList)
         {
             _wordList = wordList;
             SanitiseWordList();
+            _wordLadderSolver = new WordLadderSolver();
         }
 
         public (bool Success, string Result) CalculateWordLadder(string startWord, string endWord)
@@ -21,7 +23,7 @@ namespace WordLadder
             if (!areParamsValid.Success)
                 return (false, string.Join(Environment.NewLine, areParamsValid.Errors));
 
-            var ladder = WordLadderSolver.FindShortestLadder(startWord.ToLower(), endWord.ToLower(), _wordList);
+            var ladder = _wordLadderSolver.FindShortestLadder(startWord.ToLower(), endWord.ToLower(), _wordList);
             var result = string.Join(" ", ladder);
 
             return (true, result);
