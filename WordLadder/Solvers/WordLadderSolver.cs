@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace WordLadder
+namespace WordLadder.Solvers
 {
     public class WordLadderSolver : IWordLadderSolver
     {

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
+using WordLadder.Solvers;
 using Xunit;
 
 namespace WordLadder.UnitTests
 {
     public class WordLadderSolverTests
     {
-
         private static readonly List<string> _wordList = new() { "spin", "spit", "spat", "spot", "span", "spot" };
 
         [Fact]
@@ -20,7 +20,6 @@ namespace WordLadder.UnitTests
             Assert.Contains("spit", ladder);
             Assert.Contains("spot", ladder);
         }
-
 
         [Theory]
         [InlineData("spin", "spot", 3)]
