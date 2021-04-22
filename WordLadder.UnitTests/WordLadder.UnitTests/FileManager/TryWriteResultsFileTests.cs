@@ -27,8 +27,6 @@ namespace WordLadder.UnitTests
         [Theory]
         [InlineData("?")]
         [InlineData("test.png")]
-        [InlineData("test/.txt")]
-        [InlineData("results?.txt")]
         public void ShouldReturnFalseAndReason_WhenFileContainsInvalidCharacters(string fileName)
         {
             var fileManager = new FileManager(_fileManagerLogger);
