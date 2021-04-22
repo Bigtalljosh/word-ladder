@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using WordLadder.IO;
 using WordLadder.Solvers;
@@ -10,17 +11,15 @@ namespace WordLadder
     public class WordLadderApp
     {
         private const int _maxWordLength = 4;
-        private List<string> _wordList;
+        private readonly List<string> _wordList;
         private readonly IWordLadderSolver _wordLadderSolver;
-        private readonly IFileManager _fileManager;
 
         public WordLadderApp(IFileManager fileManager, IWordLadderSolver solver, IOptions<ApplicationArguments> options)
         {
             _wordList = new();
-            _fileManager = fileManager;
             _wordLadderSolver = solver;
-            _fileManager.TryLoadDictionaryFile(options.Value.DictionaryFileName, ref _wordList);
-            SanitiseWordList();
+            fileManager.TryLoadDictionaryFile(options.Value.DictionaryFileName, ref _wordList);
+            _wordList = SanitiseWordList(_wordList);
         }
 
         public (bool Success, string Result) CalculateWordLadder(string startWord, string endWord)
@@ -67,18 +66,12 @@ namespace WordLadder
             return response;
         }
 
-        private void SanitiseWordList()
-        {
-            List<string> newList = new();
+        private static List<string> SanitiseWordList(List<string> wordList) =>
+            wordList
+                .Where(IsWordValid)
+                .Select(w => w.ToLower())
+                .ToList();
 
-            foreach (var word in _wordList)
-            {
-                if (IsWordValid(word))
-                    newList.Add(word.ToLower());
-            }
-
-            _wordList = newList;
-        }
 
         private static bool IsWordValid(string word)
         {

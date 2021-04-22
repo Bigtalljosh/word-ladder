@@ -1,27 +1,32 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using WordLadder;
 using WordLadder.IO;
 using WordLadder.Solvers;
 
-namespace Wordladder
+CreateHostBuilder(args).Build().RunAsync();
+
+static IHostBuilder CreateHostBuilder(string[] args) =>
+    Host.CreateDefaultBuilder(args)
+        .ConfigureServices(ConfigureServices);
+
+static void ConfigureServices(HostBuilderContext hostContext, IServiceCollection services)
 {
-    class Program
+#if DEBUG
+    var options = Options.Create(new ApplicationArguments
     {
-        public static Task Main(string[] args) => CreateHostBuilder(args).Build().RunAsync();
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureServices(ConfigureServices);
-
-        private static void ConfigureServices(HostBuilderContext hostContext, IServiceCollection services)
-        {
-            services.AddHostedService<Worker>();
-            services.AddOptions<ApplicationArguments>().Bind(hostContext.Configuration).ValidateDataAnnotations();
-            services.AddSingleton<IWordLadderSolver, WordLadderSolver>();
-            services.AddSingleton<IFileManager, FileManager>();
-            services.AddSingleton<WordLadderApp>();
-        }
-    }
+        DictionaryFileName = "words-english.txt",
+        StartWord = "spin",
+        EndWord = "spot",
+        ResultsFileName = "results.txt"
+    });
+    services.AddSingleton(options);
+#else
+    services.AddOptions<ApplicationArguments>().Bind(hostContext.Configuration).ValidateDataAnnotations();
+#endif
+    services.AddHostedService<Worker>();
+    services.AddSingleton<IWordLadderSolver, WordLadderSolver>();
+    services.AddSingleton<IFileManager, FileManager>();
+    services.AddSingleton<WordLadderApp>();
 }

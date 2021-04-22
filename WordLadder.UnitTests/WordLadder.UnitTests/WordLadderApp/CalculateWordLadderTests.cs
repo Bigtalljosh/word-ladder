@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Castle.Core.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using System.Collections.Generic;
 using WordLadder.IO;
@@ -15,7 +17,8 @@ namespace WordLadder.UnitTests
 
         public CalculateWordLadderTests()
         {
-            _fileManager = new FileManager();
+            var fileManagerLogger = Substitute.For<ILogger<FileManager>>();
+            _fileManager = new FileManager(fileManagerLogger);
             _wordLadderSolver = Substitute.For<IWordLadderSolver>();
             _options = Options.Create(new ApplicationArguments 
             {
